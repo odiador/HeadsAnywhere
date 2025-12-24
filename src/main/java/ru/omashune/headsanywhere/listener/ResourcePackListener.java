@@ -32,6 +32,23 @@ public class ResourcePackListener implements Listener {
             case DECLINED:
                 kickPlayerOrSendMessageIfEnabled(player, "declined", "§cYou need to accept the resource pack to play on the server!");
                 break;
+            case ACCEPTED:
+                sendMessageIfEnabled(player, "accepted", "§aYou have accepted the resource pack.");
+                break;
+            case DISCARDED:
+                sendMessageIfEnabled(player, "discarded", "§cYou have discarded the resource pack.");
+                break;
+            case DOWNLOADED:
+                sendMessageIfEnabled(player, "downloaded", "§aResource pack downloaded successfully.");
+                break;
+            case FAILED_RELOAD:
+                sendMessageIfEnabled(player, "failed-reload", "§cFailed to reload the resource pack.");
+                break;
+            case INVALID_URL:
+                sendMessageIfEnabled(player, "invalid-url", "§cInvalid resource pack URL.");
+                break;
+            default:
+                break;
         }
     }
 

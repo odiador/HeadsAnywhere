@@ -25,13 +25,31 @@ public final class HeadsAnywhere extends JavaPlugin {
         if (resourcePack.getBoolean("enabled", false))
             pluginManager.registerEvents(new ResourcePackListener(resourcePack), this);
 
-        if (pluginManager.getPlugin("SkinsRestorer") != null)
-            SkinsRestorerProvider.get().getEventBus()
-                    .subscribe(this, SkinApplyEvent.class, e ->
-                            Bukkit.getScheduler().runTaskLater(this, () -> headManager.refreshPlayerHead(e.getPlayer(Player.class).getName()), 1));
+        if (pluginManager.getPlugin("SkinsRestorer") != null) {
+            hookSkinsRestorer(headManager);
+        }
 
         if (pluginManager.getPlugin("PlaceholderAPI") != null)
             new HeadsAnywhereExpansion(headManager).register();
+    }
+
+    private void hookSkinsRestorer(HeadManager headManager) {
+        Bukkit.getScheduler().runTaskTimer(this, task -> {
+            try {
+                SkinsRestorerProvider.get();
+            } catch (IllegalStateException e) {
+                return;
+            }
+            SkinsRestorerProvider.get().getEventBus().subscribe(
+                    this,
+                    SkinApplyEvent.class,
+                    e -> Bukkit.getScheduler().runTask(
+                            this,
+                            () -> headManager.refreshPlayerHead(e.getPlayer(Player.class))));
+
+            task.cancel();
+            getLogger().info("Hooked into SkinsRestorer API");
+        }, 1L, 20L);
     }
 
 }

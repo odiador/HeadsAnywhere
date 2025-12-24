@@ -3,6 +3,7 @@ package ru.omashune.headsanywhere.hook;
 import lombok.AllArgsConstructor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -36,16 +37,27 @@ public class HeadsAnywhereExpansion extends PlaceholderExpansion {
 
     @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String identifier) {
-        if (!identifier.startsWith("head")) return null;
+        if (!identifier.startsWith("head"))
+            return null;
+
+        Player target;
 
         int index = identifier.indexOf("_");
-        String name = index == -1 ?
-                (player == null ? "" : player.getName()) :
-                identifier.substring(index + 1);
 
-        if (name.isEmpty()) return null;
+        if (index == -1) {
+            // %head%
+            if (player == null)
+                return null;
+            target = player;
+        } else {
+            String name = identifier.substring(index + 1);
+            target = Bukkit.getPlayerExact(name);
+            if (target == null)
+                return null;
+        }
 
-        BaseComponent[] head = headManager.getPlayerHead(name);
+        BaseComponent[] head = headManager.getPlayerHead(target);
         return head == null ? null : BaseComponent.toLegacyText(head) + ChatColor.RESET;
     }
+
 }

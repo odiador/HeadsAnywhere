@@ -3,8 +3,9 @@ package ru.omashune.headsanywhere.listener;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import net.skinsrestorer.api.bukkit.events.SkinApplyBukkitEvent;
+import net.skinsrestorer.api.event.SkinApplyEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import ru.omashune.headsanywhere.HeadsAnywhere;
@@ -18,8 +19,11 @@ public class SkinApplyListener implements Listener {
     HeadManager headManager;
 
     @EventHandler
-    public void onSkinApply(SkinApplyBukkitEvent e) {
-        Bukkit.getScheduler().runTaskLater(plugin, () -> headManager.refreshPlayerHead(e.getWho()), 1);
+    public void onSkinApply(SkinApplyEvent e) {
+        Player player = e.getPlayer(Player.class);
+        if (player == null) return;
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> headManager.refreshPlayerHead(player), 1);
     }
 
 }
